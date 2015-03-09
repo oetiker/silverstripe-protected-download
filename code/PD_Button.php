@@ -34,7 +34,7 @@ class PD_Button {
                     );
                     $merchantId = $cfg->PD_PPmerchantId;
 
-                    $return = '<script async src="mysite/javascript/paypal-button.min.js?merchant='.$merchantId.'"';
+                    $return = '<script async src="' . PROTECTED_DOWNLOAD_DIR . 'javascript/paypal-button.min.js?merchant='.$merchantId.'"';
                     foreach ($button as $key => $value){
                         $return .= "\n".'  data-'.$key.'="'.$value.'"';
                     }        
