@@ -130,6 +130,10 @@ class PD_Item extends DataObject implements PermissionProvider {
         $cfg = SiteConfig::current_site_config();
         $hash = $this->makehash($email);
         $this->logSendKey($email);
-        return mail($email, 'Download Link for '.$this->Description, "You can access your download on\n\n".Director::absoluteBaseURL('')."PD_Download?email=$email&item=".$this->ID."&hash=$hash",'From: '.$cfg->PD_adminEmail);
+        $bcc = '';
+        if($cfg->PD_codeCopies){
+            $bcc = "\nBcc: ".$cfg->$cfg->PD_fromAddress;
+        }
+        return mail($email, 'Download Link for '.$this->Description, "You can access your download on\n\n".Director::absoluteBaseURL('')."PD_Download?email=$email&item=".$this->ID."&hash=$hash",'From: '.$cfg->PD_fromAddress.$bcc);
     }
 }

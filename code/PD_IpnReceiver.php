@@ -38,7 +38,7 @@ class PD_IpnReceiver extends Controller {
 
     private function onInvalid($report){
         $cfg = SiteConfig::current_site_config();
-        mail($cfg->PD_adminEmail, '[IPN] Invalid', $report);
+        mail($cfg->PD_adminEmail, '[IPN] Invalid', $report,'From: '.$cfg->PD_fromAddress);
     }
     
     private function onValid($report){       
@@ -64,7 +64,9 @@ class PD_IpnReceiver extends Controller {
         } catch (ValidationException $e) {
             user_error("PayPal Store Problem: ".$e->getMessage(), E_USER_WARNING);
         }
-        mail($cfg->PD_adminEmail, '[IPN] Verified for '.$vars['receiver_email'].' - Status '.$vars['payment_status'].' ('.$vars['txn_type'].')', $report);
+        if ($cfg->PD_PPipnCopies){
+            mail($cfg->PD_adminEmail, '[IPN] Verified for '.$vars['receiver_email'].' - Status '.$vars['payment_status'].' ('.$vars['txn_type'].')', $report,'From: '.$cfg->PD_fromAddress);
+        }
         if ($req->postVar('payment_status') == 'Completed'){
             if ($item = DataObject::get_by_id('PD_Item',$req->postVar('item_number')+0)){
                 $item->mailLink($req->postVar('payer_email'));

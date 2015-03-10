@@ -225,8 +225,11 @@ class PD_IpnListener {
      */
     public function getTextReport() {
         
-        $r = '';
-        
+        $r = '';        
+        foreach ($this->post_data as $key => $value) {
+            $r .= str_pad($key, 25)."$value\n";
+        }
+        $r .= "\n\n";
         // date and POST url
         for ($i=0; $i<80; $i++) { $r .= '-'; }
         $r .= "\n[".date('m/d/Y g:i A').'] - '.$this->getPostUri();
@@ -239,12 +242,8 @@ class PD_IpnListener {
         
         // POST vars
         for ($i=0; $i<80; $i++) { $r .= '-'; }
-        $r .= "\n";
-        
-        foreach ($this->post_data as $key => $value) {
-            $r .= str_pad($key, 25)."$value\n";
-        }
         $r .= "\n\n";
+        
         
         return $r;
     }
