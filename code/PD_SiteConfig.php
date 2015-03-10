@@ -33,11 +33,11 @@ class PD_SiteConfig extends DataObjectDecorator {
         $fields->addFieldsToTab("Root.ProtectedDownload", array(
 	    new TextField("PD_fromAddress","From Address"),
 	    new TextField("PD_adminEmail","Admin eMail"),
-	    new CheckBoxField("PD_codeCopies","Get eMail copies of Download Code Messages")
+	    new CheckBoxField("PD_codeCopies","Get eMail copies of Download Code Messages"),
 	    new TextField("PD_PPmerchantId","PayPal MerchantId"),
 	    new TextField("PD_PPcurrency","PayPal Currency"),
-	    new CheckBoxField("PD_PPsandbox","Run in PayPal Sandbox Mode")
-	    new CheckBoxField("PD_PPipnCopies","Get eMail copies of IPN Messages")
+	    new CheckBoxField("PD_PPsandbox","Run in PayPal Sandbox Mode"),
+	    new CheckBoxField("PD_PPipnCopies","Get eMail copies of IPN Messages"),
 	));
     }
      
