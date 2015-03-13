@@ -14,26 +14,21 @@ class PD_Mailer extends Controller {
 
     // only this can be accessed directly
     static $allowed_actions = array(
-       'index',
+       'index'
     );
-                                 
-    function index(SS_HTTPRequest $request){
-        $email = $request->postVar('email');
-        $item_id = $request->postVar('item');
 
+    function index(SS_HTTPRequest $request){
+        $item_id = $request->postVar('item');
         if ($item = DataObject::get_by_id('PD_Item',$item_id)){
             if ($item->Protection != 'eMail'){
-                throw new SS_HTTPResponse_Exception("Item has not eMail protection",405);
-            }           
-            $item->mailLink($email);
+                throw new SS_HTTPResponse_Exception("Item has no eMail protection",405);
+            }
+            $ticket = $item->makeTicket($request->postVars());
+            $ticket->mailLink();
             return $this->renderWith(array('PD_MailerConfirmation','Page'));
         }
-        throw new SS_HTTPResponse_Exception("Item not found",404);
+        throw new SS_HTTPResponse_Exception("Item {$item_id} not found",404);
     }
-    
-    function email(){        
-        return $this->request->postVar('email');
-    }       
 }
 
 

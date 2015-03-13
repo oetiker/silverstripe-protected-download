@@ -15,9 +15,10 @@ class PD_Admin extends ModelAdmin {
     
    public static $managed_models = array(
       'PD_Item' => array('title' => 'Items'),
-      'PD_License' => array('title' => 'License'),
+      'PD_License' => array('title' => 'Licenses'),
       'PD_IpnMsg' => array('title' => 'Payments'),
-      'PD_Log' => array('title' => 'Log'),
+      'PD_Ticket' => array('title' => 'Tickets'),
+      'PD_Log' => array('title' => 'Log Entries'),
    );
  
    static $url_segment = 'pd_adm'; // will be linked as /admin/poicategory

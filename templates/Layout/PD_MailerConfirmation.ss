@@ -6,7 +6,7 @@
 		    <div class="contentCol contentColThree firstContentCol">
                         <div class="boxContentWrapper">
 			    <h1>Thank you</h1>
-                            <p>A download code has been sent to {$email}.</p>
+                            <p>You download link is being prepared. We will send it to your mailbox when it is ready.</p>
 		        </div>
                     </div>
                 </div>

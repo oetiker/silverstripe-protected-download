@@ -69,7 +69,32 @@ class PD_IpnReceiver extends Controller {
         }
         if ($req->postVar('payment_status') == 'Completed'){
             if ($item = DataObject::get_by_id('PD_Item',$req->postVar('item_number')+0)){
-                $item->mailLink($req->postVar('payer_email'));
+                $args = array(
+                    'email' => $req->postVar('payer_email'),
+                    'first' => $req->postVar('first_name'),
+                    'last' => $req->postVar('last_name'),
+                    'affiliation' => $req->postVar('custom')                
+                );
+/*                if ($custom ){
+                    if ( $jsonArray = json_decode($req->postVar('custom'),true) ){
+                        if (json_last_error() === JSON_ERROR_NONE){
+                             $args = $jsonArray;
+                        }
+                        else {
+                            user_error("Store Problem: ".json_last_error(), E_USER_WARNING);
+                        }                            
+                    }                    
+                }
+                $args['email'] = $req->postVar('payer_email');
+                $args['first'] = $req->postVar('first_name');
+                $args['last'] = $req->postVar('last_name');
+*/
+                try {
+                    $ticket = $item->makeTicket($args);
+                    $ticket->mailLink();
+                } catch (Exception $ex){
+       	            user_error("ticket mail problem: ".$ex->getMessage(), E_USER_WARNING);
+                };                    
             }
             else {
                 user_error("PayPal Error Item not found: ".$req->postVar('item_number'), E_USER_WARNING);
@@ -80,5 +105,3 @@ class PD_IpnReceiver extends Controller {
         }
     }
 }
-
-

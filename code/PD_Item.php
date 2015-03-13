@@ -17,9 +17,12 @@ class PD_Item extends DataObject implements PermissionProvider {
     
     public static $db = array(
 	"Protection"  	=> "Enum('eMail,PayPal','eMail')",
+	"MaxDownloads"  => "Int",
+	"ValidDays" => "Int",
+	"RequireExtraData" => "Boolean",
+	"DirectMail" => "Boolean",
 	"Price"		=> "Decimal(15,2)",
         "Description" 	=> "Varchar(255)",
-        "Key"		=> "Varchar(255)",
     );
     
     static $has_one = array(
@@ -29,15 +32,20 @@ class PD_Item extends DataObject implements PermissionProvider {
     
 //Fields to show in ModelAdmin table
     static $summary_fields = array(
-	'ButtonCode','Protection','Description','AssetName','LicenseName'
+	'ButtonCode','Protection','MaxDownloads','ValidDays','RequireExtraData','Description','AssetName','LicenseName'
     );  
 
     static $searchable_fields = array(
         'Description'
     );
+    
     static $field_labels = array(
 	'ButtonCode' => 'Button',
 	'Protection' => 'Protection Method',
+	'MaxDownloads' => 'Ticket Valid for x Downloads',
+	'ValidDays'  => 'Ticket Valid for x Days',
+	'DirectMail' => 'Send Ticket Directly to Requestor',
+	'RequireExtraData' => 'Require Extra User Information (Name,Affilition)',
         'Description' => 'Description',
         'AssetID' => 'Asset',
         'AssetName' => 'Asset',
@@ -81,7 +89,6 @@ class PD_Item extends DataObject implements PermissionProvider {
         }                
         $file = new PD_FileField('Asset',null,null,null,null,$this->folder);
         $fields->replaceField('Asset',$file);
-        $fields->replaceField('Key',new ReadOnlyField('Key'));
         return $fields;
     }
     
@@ -97,43 +104,26 @@ class PD_Item extends DataObject implements PermissionProvider {
         return $this->License()->Name;
     }
     
-    function onBeforeWrite(){
-        if (! $this->ID){
-            $this->Key = sha1(rand().microtime());
+    function makeTicket($args){
+        $ticket = new PD_Ticket;
+        $ticket->TicketKey = sha1(rand().microtime());
+        $ticket->Generated = (new DateTime)->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
+        $ticket->eMail = strtolower($args['email']);
+        $ticket->Downloads = 0;
+        if ($this->RequireExtraData){
+            if (! isset($args['first']) || ! isset($args['last']) || !isset($args['affiliation'])){
+                throw new SS_HTTPResponse_Exception("Insufficient Data",403);
+            }
+            $ticket->FirstName = $args['first'];
+            $ticket->LastName = $args['last'];
+            $ticket->Affiliation = $args['affiliation'];
         }
-        return parent::onBeforeWrite();
-    }
-
-    function makehash($email){
-        return sha1($email.':'.$this->Key);
-    }                                            
-
-    protected function log($email,$action){
-        $log = new PD_Log;
-        $log->Timestamp = (new DateTime)->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
-        $log->eMail = $email;
-        $log->ItemID = $this->ID;
-        $log->Asset = $this->Asset()->getFullPath();
-        $log->Action = $action;
-        $log->write();
-    }
-
-    function logDownload($email){
-        $this->log($email,'Download');
-    }
-
-    function logSendKey($email){
-        $this->log($email,'SendKey');
-    }        
-    
-    public function mailLink($email){
-        $cfg = SiteConfig::current_site_config();
-        $hash = $this->makehash($email);
-        $this->logSendKey($email);
-        $bcc = '';
-        if($cfg->PD_codeCopies){
-            $bcc = "\nBcc: ".$cfg->$cfg->PD_fromAddress;
+        if ($this->ValidDays > 0){
+            $ticket->ValidUntil = (new DateTime)->add(new DateInterval('P'.$this->ValidDays.'D'))->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
         }
-        return mail($email, 'Download Link for '.$this->Description, "You can access your download on\n\n".Director::absoluteBaseURL('')."PD_Download?email=$email&item=".$this->ID."&hash=$hash",'From: '.$cfg->PD_fromAddress.$bcc);
+        $ticket->ItemID = $this->ID;
+        $ticket->write();
+        return $ticket;
     }
+
 }

@@ -14,39 +14,43 @@
 class PD_Download extends Controller {
 
     // only this can be accessed directly
-    static $allowed_actions = array(
-       'index',
-    );
+    static $allowed_actions = array();
 
+    static $url_handlers = array(
+       '$TicketKey!' => 'index'
+    );
+               
+               
     protected $licenseText;
                                      
     function index(SS_HTTPRequest $req){
         $cfg = SiteConfig::current_site_config();
-
-        $email = $req->requestVar('email');
-        $item_id = $req->requestVar('item');
-        $hash = $req->requestVar('hash');
-
-        $item = DataObject::get_by_id('PD_Item',$item_id);
-
-        if (!$item) {
+        # Debug::dump($req);
+        $key = $req->allParams()['TicketKey'];
+        $ticket = DataObject::get_one('PD_Ticket',"TicketKey = '".Convert::raw2sql($key)."'");
+        # user_error("Got Request for $key", E_USER_WARNING);
+         
+        if (!$ticket) {
              $error = ErrorPage::response_for(404);
              throw new SS_HTTPResponse_Exception($error);
-         }
-        
-
-        if ( $item->makehash($email) != $hash ){
-            user_error('bad hash for f:'.$file.' e:'.$email,E_USER_WARNING);
-            $response = ErrorPage::response_for(404);
-            throw new SS_HTTPResponse_Exception($response);
         }
+
+        $item = $ticket->Item();
+
+        if ($item->ValidDays && $ticket->ValidUntil < (new DateTime)->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s')){
+             throw new SS_HTTPResponse_Exception("Ticket has Expired",403);
+        }        
+
+        $maxDownloads = $item->MaxDownloads;
+        if ($maxDownloads > 0 && $ticket->Downloads > $maxDownloads){
+             throw new SS_HTTPResponse_Exception("You may only download this $maxDownloads",403);
+        }        
 
         # redirect to license screen
         if ($item->LicenseID && $req->requestVar('license') != 'ok') {
             $this->licenseText = $item->License()->License;
             return $this->renderWith(array('PD_License','Page'));
         }
-
         $path = $item->Asset()->getFullPath();
         // check that file exists and is readable
 
@@ -64,7 +68,7 @@ class PD_Download extends Controller {
                 header('Content-Disposition: attachment; filename='.$filename);
                 header('Content-Transfer-Encoding: binary');
                 fpassthru($file);
-                $item->logDownload($email);
+                $ticket->logDownload();
                 exit;
             } else {
                 $response = ErrorPage::response_for(404);
