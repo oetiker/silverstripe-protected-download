@@ -79,7 +79,7 @@ class PD_Ticket extends DataObject implements PermissionProvider {
     function logDownload(){
         $this->log('Download');
         $this->Downloads = $this->Downloads+1;
-        $this->write;
+        $this->write();
     }
 
     function logSendKey(){
