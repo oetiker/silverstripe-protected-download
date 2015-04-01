@@ -42,7 +42,7 @@ class PD_Download extends Controller {
         }        
 
         $maxDownloads = $item->MaxDownloads;
-        if ($maxDownloads > 0 && $ticket->Downloads > $maxDownloads){
+        if ($maxDownloads > 0 && $ticket->Downloads >= $maxDownloads){
              throw new SS_HTTPResponse_Exception("You may only download this $maxDownloads",403);
         }        
 
