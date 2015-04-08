@@ -118,7 +118,7 @@ class PD_Item extends DataObject implements PermissionProvider {
                 }
                 $code = explode(':',$args['code'],3);
                 if ( sha1($this->Secret + ':' + $code[0] + ':' + $code[1]) != $code[2] ){
-                    throw new SS_HTTPResponse_Exception("Invalid Authorization Code",403);
+                    throw new SS_HTTPResponse_Exception("Invalid Authorization Code "+$this->Secret + ':' + $code[0] + ':' + $code[1],403);
                 }
                 $ticket->eMail = strtolower($code[0]);
                 break;                    
