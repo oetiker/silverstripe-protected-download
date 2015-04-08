@@ -16,7 +16,7 @@ class PD_Item extends DataObject implements PermissionProvider {
     protected $folder = 'ProtectedDownload';
     
     public static $db = array(
-	"Protection"  	=> "Enum('eMail,PayPal,Secret','eMail')",
+	"Protection"  	=> "Enum('eMail,PayPal,Code','eMail')",
 	"MaxDownloads"  => "Int",
 	"ValidDays" => "Int",
 	"RequireExtraData" => "Boolean",
