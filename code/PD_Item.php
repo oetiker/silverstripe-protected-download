@@ -16,13 +16,14 @@ class PD_Item extends DataObject implements PermissionProvider {
     protected $folder = 'ProtectedDownload';
     
     public static $db = array(
-	"Protection"  	=> "Enum('eMail,PayPal','eMail')",
+	"Protection"  	=> "Enum('eMail,PayPal,Secret','eMail')",
 	"MaxDownloads"  => "Int",
 	"ValidDays" => "Int",
 	"RequireExtraData" => "Boolean",
 	"DirectMail" => "Boolean",
 	"Price"		=> "Decimal(15,2)",
         "Description" 	=> "Varchar(255)",
+        "Secret"        => "Varchar(20)",
     );
     
     static $has_one = array(
@@ -32,11 +33,13 @@ class PD_Item extends DataObject implements PermissionProvider {
     
 //Fields to show in ModelAdmin table
     static $summary_fields = array(
-	'ButtonCode','Protection','MaxDownloads','ValidDays','RequireExtraData','Description','AssetName','LicenseName'
+	'ButtonCode','Protection','Secret','MaxDownloads','ValidDays','RequireExtraData','Description','AssetName','LicenseName'
     );  
 
     static $searchable_fields = array(
-        'Description'
+        'Description',
+        'Secret',
+        'AssetName'
     );
     
     static $field_labels = array(
@@ -44,6 +47,7 @@ class PD_Item extends DataObject implements PermissionProvider {
 	'Protection' => 'Protection Method',
 	'MaxDownloads' => 'Ticket Valid for x Downloads',
 	'ValidDays'  => 'Ticket Valid for x Days',
+	'Secret'     => 'Secret',
 	'DirectMail' => 'Send Ticket Directly to Requestor',
 	'RequireExtraData' => 'Require Extra User Information (Name,Affilition)',
         'Description' => 'Description',
@@ -108,16 +112,34 @@ class PD_Item extends DataObject implements PermissionProvider {
         $ticket = new PD_Ticket;
         $ticket->TicketKey = sha1(rand().microtime());
         $ticket->Generated = (new DateTime)->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
-        $ticket->eMail = strtolower($args['email']);
-        $ticket->Downloads = 0;
-        if ($this->RequireExtraData){
-            if (! isset($args['first']) || ! isset($args['last']) || !isset($args['affiliation'])){
-                throw new SS_HTTPResponse_Exception("Insufficient Data",403);
-            }
-            $ticket->FirstName = $args['first'];
-            $ticket->LastName = $args['last'];
-            $ticket->Affiliation = $args['affiliation'];
+        switch ($this->Protection){
+            case 'Code':
+                if (!isset($args['code']){
+                    throw new SS_HTTPResponse_Exception("Insufficient Data",403);
+                }
+                $code = explode(':',$args['code'],3);
+                if ( sha1($code[0] + ':' + $code[1] + ':' + $this->Secret) != $code[2] ){
+                    throw new SS_HTTPResponse_Exception("Invalid Authorization Code",403);
+                }
+                $ticket->eMail = strtolower($code[0]);
+                break;                    
+            case 'eMail':
+            case 'PayPal':
+                $ticket->eMail = strtolower($args['email']);
+                if ($this->RequireExtraData){
+                    if (! isset($args['first']) || ! isset($args['last']) || !isset($args['affiliation'])){
+                        throw new SS_HTTPResponse_Exception("Insufficient Data",403);
+                    }
+                    $ticket->FirstName = $args['first'];
+                    $ticket->LastName = $args['last'];
+                    $ticket->Affiliation = $args['affiliation'];
+                }
+                break;
+            default:
+                throw new SS_HTTPResponse_Exception("Invalid Protection Type",403);
+                break;
         }
+        $ticket->Downloads = 0;
         if ($this->ValidDays > 0){
             $ticket->ValidUntil = (new DateTime)->add(new DateInterval('P'.$this->ValidDays.'D'))->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
         }
@@ -125,5 +147,4 @@ class PD_Item extends DataObject implements PermissionProvider {
         $ticket->write();
         return $ticket;
     }
-
 }

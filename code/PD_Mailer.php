@@ -20,7 +20,7 @@ class PD_Mailer extends Controller {
     function index(SS_HTTPRequest $request){
         $item_id = $request->postVar('item');
         if ($item = DataObject::get_by_id('PD_Item',$item_id)){
-            if ($item->Protection != 'eMail'){
+            if ($item->Protection != 'eMail' && $item->Protection != 'Code' ){
                 throw new SS_HTTPResponse_Exception("Item has no eMail protection",405);
             }
             $ticket = $item->makeTicket($request->postVars());

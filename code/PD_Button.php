@@ -80,6 +80,20 @@ class PD_Button {
                     
                     $submitText = "Get Download Link";
                     break;
+                case 'Code':
+                    $action = Director::absoluteBaseURL('').'PD_Mailer';
+                    $input  = '';
+                    
+                    $hiddencfg = array(
+                        'item' => $item->ID,
+                    );
+
+                    $textcfg = array(
+                        'code' => 'Authorization Code',
+		    );
+                   
+                    $submitText = "Get Download Link";
+                    break;
 		default:
 		    return "Invalid Protection for button $item_id";		
             }
