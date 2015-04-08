@@ -98,7 +98,7 @@ class PD_Ticket extends DataObject implements PermissionProvider {
 	    $to = $this->eMail;
 	}	    
         return mail($to, 
-                    'Download Link for '.$this->Description.' ('.$this->eMail.')', 
+                    'Download Link for '.$this->Item()->Description.' ('.$this->eMail.')', 
                     "You can access your download on\n\n".Director::absoluteBaseURL('')."PD_Download/".$this->TicketKey,
                     'From: '.$cfg->PD_fromAddress.$bcc);
     }            
