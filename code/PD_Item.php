@@ -38,8 +38,7 @@ class PD_Item extends DataObject implements PermissionProvider {
 
     static $searchable_fields = array(
         'Description',
-        'Secret',
-        'AssetName'
+        'Secret'
     );
     
     static $field_labels = array(
