@@ -114,7 +114,7 @@ class PD_Item extends DataObject implements PermissionProvider {
         $ticket->Generated = (new DateTime)->setTimeZone(new DateTimeZone('GMT'))->format('Y-m-d H:i:s');
         switch ($this->Protection){
             case 'Code':
-                if (!isset($args['code']){
+                if (!isset($args['code'])){
                     throw new SS_HTTPResponse_Exception("Insufficient Data",403);
                 }
                 $code = explode(':',$args['code'],3);
