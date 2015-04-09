@@ -91,15 +91,16 @@ class PD_Ticket extends DataObject implements PermissionProvider {
         $this->logSendKey();
         $bcc = '';
         if($cfg->PD_codeCopies){
-            $bcc = "\nBcc: ".$cfg->$cfg->PD_fromAddress;
+            $bcc = "\nBcc: ".$cfg->PD_fromAddress;
         }
 	$to = $cfg->PD_adminEmail;
 	if($this->Item()->DirectMail){
 	    $to = $this->eMail;
-	}	    
+	}
+	$description = $this->Item()->Description;	    
         return mail($to, 
-                    'Download Link for '.$this->Item()->Description.' ('.$this->eMail.')', 
-                    "You can access your download on\n\n".Director::absoluteBaseURL('')."PD_Download/".$this->TicketKey,
+                    'Download Link for '.$description.' ('.$this->eMail.')', 
+                    "Access your download ($description) on\n\n".Director::absoluteBaseURL('')."PD_Download/".$this->TicketKey,
                     'From: '.$cfg->PD_fromAddress.$bcc);
     }            
 }
