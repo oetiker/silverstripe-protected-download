@@ -38,15 +38,16 @@ class PD_Item extends DataObject implements PermissionProvider {
 
     static $searchable_fields = array(
         'Description',
-        'Secret'
+        'Secret',
+        'Protection'
     );
     
     static $field_labels = array(
 	'ButtonCode' => 'Button',
 	'Protection' => 'Protection Method',
-	'MaxDownloads' => 'Ticket Valid for x Downloads',
-	'ValidDays'  => 'Ticket Valid for x Days',
-	'Secret'     => 'Secret',
+	'MaxDownloads' => 'Max Downloads',
+	'ValidDays'  => 'Max Days',
+	'Secret'     => 'Shared Secret (for Code)',
 	'DirectMail' => 'Send Ticket Directly to Requestor',
 	'RequireExtraData' => 'Require Extra User Information (Name,Affilition)',
         'Description' => 'Description',
