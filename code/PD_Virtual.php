@@ -23,7 +23,7 @@ class PD_Virtual {
                .parent().parent().css({display: 'inline'}) /* form */
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
         });
-        jQuery('#PDV_$content').on('change keyup paste',function(){
+        jQuery('#PDV_$content').change(function(){
              jQuery('input[name="$content"]').val(jQuery(this).val());
         });
         </script>
