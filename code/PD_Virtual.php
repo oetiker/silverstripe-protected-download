@@ -25,7 +25,7 @@ class PD_Virtual {
             jQuery('form').each(function(){
                var form=jQuery(this);
                var walker = form.prev();
-               while (walker && walker.text().length == 0){
+               while (walker.length > 0 && walker.text().length == 0){
                    walker = walker.prev();
                }
                if (walker.length > 0){
