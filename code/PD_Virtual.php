@@ -20,10 +20,10 @@ class PD_Virtual {
         jQuery(document).ready(function(){
             jQuery('input[name="$content"]')
                .parent().parent().hide() /* fieldset */
-               .parent().parent().css({display: 'inline-block'}) /* form */
+               .parent().parent().css({display: 'inline'}) /* form */
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
         });
-        jQuery('#PDV_$content').pm('change keyup paste',function(){
+        jQuery('#PDV_$content').on('change keyup paste',function(){
              jQuery('input[name="$content"]').val(jQuery(this).val());
         });
         </script>
