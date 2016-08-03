@@ -24,13 +24,13 @@ class PD_Virtual {
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
             });
            jQuery('form').each(function(){
-               var $form=jQuery(this);
-               var $walker = $form.prev();
-               while ($walker && $walker.text().length == 0){
-                   $walker = $walker.prev();
+               var form=jQuery(this);
+               var walker = form.prev();
+               while (walker && walker.text().length == 0){
+                   walker = walker.prev();
                }
-               if ($walker.length > 0){
-                   $walker.append($form);
+               if (walker.length > 0){
+                   walker.append(form);
                }
             });
         });
