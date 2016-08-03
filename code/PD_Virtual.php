@@ -20,7 +20,7 @@ class PD_Virtual {
         jQuery(document).ready(function(){
             jQuery('input[name="$content"]')
                .parent().parent().hide() /* fieldset */
-               .parent().parent() /* form */
+               .parent().parent().css({display: 'inline-block'}) /* form */
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
             jQuery('form').each(function(){
                var form=jQuery(this);
