@@ -15,7 +15,7 @@
 class PD_Virtual {
     public static function ShortCodeHandler($arguments,$content = null, $parser = null, $tagName) {
         return <<<HTML_END
-        <input id="PDV_$content" type="text" width="30/>
+        <input id="PDV_$content" type="text" width="30"/>
         <script>
         jQuery(document).ready(function(){
             jQuery('input[name="$content"]')
