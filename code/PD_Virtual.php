@@ -20,8 +20,19 @@ class PD_Virtual {
         jQuery(document).ready(function(){
             jQuery('input[name="$content"]')
                .parent().parent().hide() /* fieldset */
-               .parent().parent().css({display: 'inline'}) /* form */
+               .parent().parent() /* form */
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
+            });
+           jQuery('form').each(function(){
+               var $form=jQuery(this);
+               var $walker = $form.prev();
+               while ($walker && $walker.text().length == 0){
+                   $walker = $walker.prev();
+               }
+               if ($walker.length > 0){
+                   $walker.append($form);
+               }
+            });
         });
         jQuery('#PDV_$content').change(function(){
              jQuery('input[name="$content"]').val(jQuery(this).val());
