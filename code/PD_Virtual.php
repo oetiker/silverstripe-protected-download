@@ -22,8 +22,7 @@ class PD_Virtual {
                .parent().parent().hide() /* fieldset */
                .parent().parent() /* form */
                .find('.Actions').css({marginLeft: '0px'}); /* action button */
-            });
-           jQuery('form').each(function(){
+            jQuery('form').each(function(){
                var form=jQuery(this);
                var walker = form.prev();
                while (walker && walker.text().length == 0){
