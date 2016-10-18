@@ -19,8 +19,6 @@ class PD_IpnReceiver extends Controller {
 
 	$listener = new PD_IpnListener();
         $listener->use_sandbox = $cfg->PD_PPsandbox ? true : false;
-	// ssl v3 is dead
-        $listener->force_ssl_v3 = false;
 	$listener->use_curl = true;
 	
         try {
